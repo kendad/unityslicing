@@ -29,7 +29,7 @@ public class CutMeshUpdated : MonoBehaviour
     private List<int> trianglesOnPositiveSide = new List<int>();
     private List<int> trianglesOnNegativeSide = new List<int>();
     private List<int> trianglesToIgnore = new List<int>();
-    private Dictionary<int, List<Vector3>> triInterPairs = new Dictionary<int, List<Vector3>>();
+    private List<Vector3> newPoints = new List<Vector3>();
 
     // Start is called before the first frame update
     void Start()
@@ -37,8 +37,9 @@ public class CutMeshUpdated : MonoBehaviour
         PlaneConstructData();
         GetObjectMeshData();
         V_L_Converter();
-        GenerateIntersectionPoints();
+        //GenerateIntersectionPoints();
         SeperatePointsByPlaneSide();
+        CreateNewFaceTriangles();
         CreateGameObject();
         /*foreach (KeyValuePair<int, List<Vector3>> value in triInterPairs){
             Debug.Log("Triangle: "+value.Key);
@@ -146,7 +147,6 @@ public class CutMeshUpdated : MonoBehaviour
                 isHit = true;
             }
             if (isHit) trianglesToIgnore.Add(i);
-            if (isHit && tmpPoints.Count != 0) triInterPairs.Add(i, tmpPoints);
             //Debug.DrawRay(this.transform.TransformPoint(vertices[triangles[i]]),(this.transform.TransformPoint(vertices[triangles[i+1]])- this.transform.TransformPoint(vertices[triangles[i]])).normalized,Color.blue);
             //Debug.DrawRay(this.transform.TransformPoint(vertices[triangles[i+1]]),(this.transform.TransformPoint(vertices[triangles[i+2]])-this.transform.TransformPoint(vertices[triangles[i+1]])).normalized,Color.blue);
             //Debug.DrawRay(this.transform.TransformPoint(vertices[triangles[i+2]]),(this.transform.TransformPoint(vertices[triangles[i]])-this.transform.TransformPoint(vertices[triangles[i+2]])).normalized,Color.blue);
@@ -226,6 +226,8 @@ public class CutMeshUpdated : MonoBehaviour
             }
             verticesList.Add(newVertex1);
             verticesList.Add(newVertex2);
+            newPoints.Add(newVertex1);
+            newPoints.Add(newVertex2);
             normalsList.Add(normals[triangles[triangleIndex]]);
             normalsList.Add(normals[triangles[triangleIndex]]);
             
@@ -274,6 +276,8 @@ public class CutMeshUpdated : MonoBehaviour
             }
             verticesList.Add(newVertex1);
             verticesList.Add(newVertex2);
+            newPoints.Add(newVertex1);
+            newPoints.Add(newVertex2);
             normalsList.Add(normals[triangles[triangleIndex]]);
             normalsList.Add(normals[triangles[triangleIndex]]);
 
@@ -310,9 +314,18 @@ public class CutMeshUpdated : MonoBehaviour
         }
     }
 
-    void AddTrianglesToPosNegSides(Vector3 newVertex1,Vector3 newVertex2,List<Vector3> posSide, List<Vector3> negSide,Vector3[] pointsOnTriangle)
+    void CreateNewFaceTriangles()
     {
-        
+        for(int i = 1; i < newPoints.Count-1; i++)
+        {
+            trianglesOnPositiveSide.Add(verticesList.IndexOf(newPoints[0]));
+            trianglesOnPositiveSide.Add(verticesList.IndexOf(newPoints[i+1]));
+            trianglesOnPositiveSide.Add(verticesList.IndexOf(newPoints[i]));
+            //
+            trianglesOnNegativeSide.Add(verticesList.IndexOf(newPoints[0]));
+            trianglesOnNegativeSide.Add(verticesList.IndexOf(newPoints[i]));
+            trianglesOnNegativeSide.Add(verticesList.IndexOf(newPoints[i+1]));
+        }
     }
 
     void DrawPointsOnSidesOfPlane()
