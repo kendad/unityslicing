@@ -41,6 +41,8 @@ public class CutMeshUpdated : MonoBehaviour
         SeperatePointsByPlaneSide();
         CreateNewFaceTriangles();
         CreateGameObject();
+        this.gameObject.SetActive(false);
+        planeObject.SetActive(false);
         /*foreach (KeyValuePair<int, List<Vector3>> value in triInterPairs){
             Debug.Log("Triangle: "+value.Key);
             foreach(Vector3 point in value.Value)
@@ -106,6 +108,8 @@ public class CutMeshUpdated : MonoBehaviour
         meshFilterData.mesh.triangles = trianglesOnPositiveSide.ToArray();
         //meshFilterData.mesh.uv = UVs;
         meshRendererData.materials = materials;
+        go1.AddComponent<Rigidbody>();
+        go1.AddComponent<BoxCollider>();
 
         GameObject go2 = new GameObject();
         meshRendererData = go2.AddComponent<MeshRenderer>();
@@ -116,6 +120,8 @@ public class CutMeshUpdated : MonoBehaviour
         meshFilterData.mesh.triangles = trianglesOnNegativeSide.ToArray();
         //meshFilterData.mesh.uv = UVs;
         meshRendererData.materials = materials;
+        go2.AddComponent<Rigidbody>();
+        go2.AddComponent<BoxCollider>();
     }
 
     void GenerateIntersectionPoints()
